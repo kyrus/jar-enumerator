@@ -15,21 +15,18 @@ import java.util.List;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
+/**
+ * Dumps the methods of classes in a JAR file
+ */
 public class JarDumper {
-    private static URLClassLoader customLoader;
-
-    private static Class<?> loadClass(String className) {
-        try {
-            return Class.forName(className, true, customLoader);
-        } catch (ClassNotFoundException e) {
-            throw new RuntimeException("Unexpected ClassNotFoundException loading class '" + className + "'");
-        }
-    }
-
-    private static List<Class<?>> processJarfile(URL resource) {
-        // add the jar to the classpath
-        customLoader = new URLClassLoader(new URL[] { resource }, customLoader != null ? customLoader
-                : JarDumper.class.getClassLoader());
+    /**
+     * Loads classes from a JAR file
+     * @param resource JAR file to load
+     * @return List of classes that have been loaded
+     */
+    private static List<Class<?>> loadClassesFromJar(URL resource) {
+        // create a custom classloader with the JAR we are loading 
+        URLClassLoader customLoader = new URLClassLoader(new URL[] { resource }, JarDumper.class.getClassLoader());
 
         String jarPath = resource.getPath().replaceFirst("[.]jar[!].*", ".jar").replaceFirst("file:", "");
 
@@ -46,13 +43,32 @@ public class JarDumper {
             String entryName = entries.nextElement().getName();
             if (entryName.endsWith(".class")) {
                 String className = entryName.replace('/', '.').replace('\\', '.').replace(".class", "");
-                // System.out.println("Found class in jar [" + className + "]");
-                classes.add(loadClass(className));
+                try {
+                    classes.add(Class.forName(className, true, customLoader));
+                } catch (ClassNotFoundException e) {
+                    throw new RuntimeException("Unexpected ClassNotFoundException loading class '" + className + "'");
+                }
             }
         }
         return classes;
     }
 
+    /**
+     * Loads methods in a class
+     * @param clazz class to process
+     * @param skipStatic
+     * @param skipNonStatic
+     * @param skipFinal
+     * @param skipNative
+     * @param skipSynthetic
+     * @param skipVarargs
+     * @param skipBridge
+     * @param skipInterface
+     * @param skipAbstract
+     * @param skipMethodsWithNonConcreteParams
+     * @param showModifiers
+     * @return List of strings describing methods in the class that pass the filter 
+     */
     private static List<String> loadClassMethods(Class<?> clazz, boolean skipStatic, boolean skipNonStatic,
             boolean skipFinal, boolean skipNative, boolean skipSynthetic, boolean skipVarargs, boolean skipBridge,
             boolean skipInterface, boolean skipAbstract, boolean skipMethodsWithNonConcreteParams, boolean showModifiers) {
@@ -90,12 +106,20 @@ public class JarDumper {
                     continue;
             }
 
-            ret.add(toSootForm(clazz, m, showModifiers));
+            // convert the class+method to a custom string format and add it to our return list
+            ret.add(toDescriptorString(clazz, m, showModifiers));
         }
         return ret;
     }
-
-    private static String toSootForm(Class<?> clazz, Method m, boolean showModifiers) {
+    
+    /**
+     * Creates a string describing a method in a class
+     * @param clazz Class that contains the method
+     * @param m method to describe
+     * @param showModifiers if the method's modifiers should be printed
+     * @return string describing the method
+     */
+    private static String toDescriptorString(Class<?> clazz, Method m, boolean showModifiers) {
         StringBuilder ret = new StringBuilder();
         // class name
         ret.append("<").append(clazz.getCanonicalName()).append(": ");
@@ -122,7 +146,7 @@ public class JarDumper {
 
     public static void main(String[] args) {
         if (args.length < 1 || Arrays.asList(args).contains("-h")) {
-            System.err.println("usage: jar-dumper [zero or more filtering args listed below] <input JAR>");
+            System.err.println("usage: jar-dumper <input JAR> [zero or more filtering args listed below]");
             System.err.println("         [-skipStatic]");
             System.err.println("            Skips static methods");
             System.err.println("         [-skipNonStatic]");
@@ -167,8 +191,8 @@ public class JarDumper {
         boolean skipMethodsWithNonConcreteParams = argList.contains("-skipMethodsWithNonConcreteParams");
 
         try {
-            List<Class<?>> classes = processJarfile(new File(inputJar).toURI().toURL());
-
+            // load classes from the jar and sort them by name
+            List<Class<?>> classes = loadClassesFromJar(new File(inputJar).toURI().toURL());
             Collections.sort(classes, new Comparator<Class<?>>() {
                 @Override
                 public int compare(Class<?> o1, Class<?> o2) {
@@ -176,17 +200,18 @@ public class JarDumper {
                 }
             });
 
+            // process each loaded class
             for (Class<?> c : classes) {
                 for (String s : loadClassMethods(c, skipStatic, skipNonStatic, skipFinal, skipNative, skipSynthetic,
                         skipVarargs, skipBridge, skipInterface, skipAbstract, skipMethodsWithNonConcreteParams,
                         showModifiers)) {
+                    // output the method descriptor
                     System.out.println(s);
                 }
             }
-            // System.out.println("Reported " + classes.size() + " classes and "
-            // + numMethods + " methods");
         } catch (Exception ex) {
             ex.printStackTrace();
+            System.exit(1);
         }
     }
 }

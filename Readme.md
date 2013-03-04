@@ -13,7 +13,7 @@ of class types and modifiers is supported.
 Usage:
 
 	java -jar dist/jar-dumper.jar -h
-	usage: jar-dumper [zero or more filtering args listed below] <input JAR>
+	usage: jar-dumper <input JAR> [zero or more filtering args listed below]
          [-skipStatic]
             Skips static methods
          [-skipNonStatic]
