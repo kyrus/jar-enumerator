@@ -1,4 +1,4 @@
-# JAR Dumper
+# JAR Enumerator
 Extracts the methods of classes in a JAR file. Filtering by a variety
 of class types and modifiers is supported.
 
@@ -8,12 +8,12 @@ of class types and modifiers is supported.
 
 # Using
 
-	java -jar jar-dumper.jar android.jar -skipNative -skipVarargs -skipInterface -skipAbstract -skipNonStatic -skipMethodsWithNonConcreteParams
+	java -jar jar-enumerator.jar android.jar -skipNative -skipVarargs -skipInterface -skipAbstract -skipNonStatic -skipMethodsWithNonConcreteParams
 
 Usage:
 
-	java -jar dist/jar-dumper.jar -h
-	usage: jar-dumper <input JAR> [zero or more filtering args listed below]
+	java -jar dist/jar-enumerator.jar -h
+	usage: jar-enumerator <input JAR> [zero or more filtering args listed below]
          [-skipStatic]
             Skips static methods
          [-skipNonStatic]

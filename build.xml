@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<project default="dist" name="Create Runnable Jar for Project java-jar-dumper with Jar-in-Jar Loader">
+<project default="dist" name="JAR-Enumerator">
 
 	<target name="clean">
 		<delete dir="bin"/>
@@ -14,9 +14,9 @@
 	</target>
 
     <target name="dist" depends="build">
-        <jar destfile="dist/jar-dumper.jar">
+        <jar destfile="dist/jar-enumerator.jar">
             <manifest>
-                <attribute name="Main-Class" value="com.kyrus.jardumper.JarDumper"/>
+                <attribute name="Main-Class" value="com.kyrus.jarenumerator.JarEnumerator"/>
                 <attribute name="Class-Path" value="."/>
             </manifest>
             <fileset dir="bin"/>

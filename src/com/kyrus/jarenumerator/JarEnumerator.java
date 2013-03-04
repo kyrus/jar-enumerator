@@ -1,4 +1,4 @@
-package com.kyrus.jardumper;
+package com.kyrus.jarenumerator;
 
 import java.io.File;
 import java.io.IOException;
@@ -18,7 +18,7 @@ import java.util.jar.JarFile;
 /**
  * Dumps the methods of classes in a JAR file
  */
-public class JarDumper {
+public class JarEnumerator {
     /**
      * Loads classes from a JAR file
      * @param resource JAR file to load
@@ -26,7 +26,7 @@ public class JarDumper {
      */
     private static List<Class<?>> loadClassesFromJar(URL resource) {
         // create a custom classloader with the JAR we are loading 
-        URLClassLoader customLoader = new URLClassLoader(new URL[] { resource }, JarDumper.class.getClassLoader());
+        URLClassLoader customLoader = new URLClassLoader(new URL[] { resource }, JarEnumerator.class.getClassLoader());
 
         String jarPath = resource.getPath().replaceFirst("[.]jar[!].*", ".jar").replaceFirst("file:", "");
 
