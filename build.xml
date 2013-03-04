@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project default="dist" name="Create Runnable Jar for Project java-jar-dumper with Jar-in-Jar Loader">
+
+	<target name="clean">
+		<delete dir="bin"/>
+		<delete dir="dist"/>
+	</target>
+
+	<target name="build">
+		<mkdir dir="bin"/>
+        <javac destdir="bin">
+            <src path="src"/>
+        </javac>
+	</target>
+
+    <target name="dist" depends="build">
+        <jar destfile="dist/jar-dumper.jar">
+            <manifest>
+                <attribute name="Main-Class" value="com.kyrus.jardumper.JarDumper"/>
+                <attribute name="Class-Path" value="."/>
+            </manifest>
+            <fileset dir="bin"/>
+        </jar>
+    </target>
+</project>
