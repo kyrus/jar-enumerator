@@ -55,8 +55,7 @@ public class JarDumper {
 
     private static List<String> loadClassMethods(Class<?> clazz, boolean skipStatic, boolean skipNonStatic,
             boolean skipFinal, boolean skipNative, boolean skipSynthetic, boolean skipVarargs, boolean skipBridge,
-            boolean skipVolatile, boolean skipTransient, boolean skipInterface, boolean skipAbstract,
-            boolean skipMethodsWithNonConcreteParams, boolean showModifiers) {
+            boolean skipInterface, boolean skipAbstract, boolean skipMethodsWithNonConcreteParams, boolean showModifiers) {
         List<String> ret = new ArrayList<String>();
         for (Method m : clazz.getMethods()) {
             if (skipStatic && Modifier.isStatic(m.getModifiers()))
@@ -72,10 +71,6 @@ public class JarDumper {
             if (skipVarargs && m.isVarArgs())
                 continue;
             if (skipBridge && m.isBridge())
-                continue;
-            if (skipVolatile && Modifier.isVolatile(m.getModifiers()))
-                continue;
-            if (skipTransient && Modifier.isTransient(m.getModifiers()))
                 continue;
             if (skipInterface && Modifier.isInterface(m.getModifiers()))
                 continue;
@@ -127,22 +122,33 @@ public class JarDumper {
 
     public static void main(String[] args) {
         if (args.length < 1 || Arrays.asList(args).contains("-h")) {
-            System.err.println("usage: jar-dumper <input JAR>");
-            System.err.println("                  [-skipStatic]");
-            System.err.println("                  [-skipNonStatic]");
-            System.err.println("                  [-skipFinal]");
-            System.err.println("                  [-skipNative]");
-            System.err.println("                  [-skipSynthetic]");
-            System.err.println("                  [-skipVarargs]");
-            System.err.println("                  [-skipBridge]");
-            System.err.println("                  [-skipVolatile]");
-            System.err.println("                  [-skipTransient]");
-            System.err.println("                  [-skipInterface]");
-            System.err.println("                  [-skipAbstract]");
-            System.err.println("                  [-skipMethodsWithNonConcreteParams]");
-            System.err.println("                  [-showModifiers]");
+            System.err.println("usage: jar-dumper [zero or more filtering args listed below] <input JAR>");
+            System.err.println("         [-skipStatic]");
+            System.err.println("            Skips static methods");
+            System.err.println("         [-skipNonStatic]");
+            System.err.println("            Skips non-static methods");
+            System.err.println("         [-skipFinal]");
+            System.err.println("            Skips final methods");
+            System.err.println("         [-skipNative]");
+            System.err.println("            Skips native methods");
+            System.err.println("         [-skipSynthetic]");
+            System.err.println("            Skips synthetic methods");
+            System.err.println("         [-skipVarargs]");
+            System.err.println("            Skips methods that have a varargs parameter");
+            System.err.println("         [-skipBridge]");
+            System.err.println("            Skips bridge methods");
+            System.err.println("         [-skipInterface]");
+            System.err.println("            Skips interface classes");
+            System.err.println("         [-skipAbstract]");
+            System.err.println("            Skips abstract classes");
+            System.err.println("         [-skipMethodsWithNonConcreteParams]");
             System.err
-                    .println("\nExample: JarDumper C:\\android-sdks\\platforms\\android-10\\android.jar -skipNative -skipVarargs -skipInterface -skipAbstract -skipNonStatic -skipMethodsWithNonConcreteParams");
+                    .println("            Skips any methods that have non-concrete (abstract, interface, etc.) parameters");
+            System.err.println("         [-showModifiers]");
+            System.err
+                    .println("            Shows return types and modifiers (public, abstract, etc.) of methods when printing.");
+            System.err
+                    .println("\nExample: java -jar jar-dumper.jar android.jar -skipNative -skipVarargs -skipInterface -skipAbstract -skipNonStatic -skipMethodsWithNonConcreteParams");
             System.exit(2);
         }
         String inputJar = args[0];
@@ -155,8 +161,6 @@ public class JarDumper {
         boolean skipSynthetic = argList.contains("-skipSynthetic");
         boolean skipVarargs = argList.contains("-skipVarargs");
         boolean skipBridge = argList.contains("-skipBridge");
-        boolean skipVolatile = argList.contains("-skipVolatile");
-        boolean skipTransient = argList.contains("-skipTransient");
         boolean skipInterface = argList.contains("-skipInterface");
         boolean skipAbstract = argList.contains("-skipAbstract");
         boolean showModifiers = argList.contains("-showModifiers");
@@ -174,8 +178,8 @@ public class JarDumper {
 
             for (Class<?> c : classes) {
                 for (String s : loadClassMethods(c, skipStatic, skipNonStatic, skipFinal, skipNative, skipSynthetic,
-                        skipVarargs, skipBridge, skipVolatile, skipTransient, skipInterface, skipAbstract,
-                        skipMethodsWithNonConcreteParams, showModifiers)) {
+                        skipVarargs, skipBridge, skipInterface, skipAbstract, skipMethodsWithNonConcreteParams,
+                        showModifiers)) {
                     System.out.println(s);
                 }
             }
