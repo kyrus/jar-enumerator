@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<project default="dist" name="JAR-Enumerator">
-
+<project default="dist" name="jar-enumerator">
 	<target name="clean">
 		<delete dir="bin"/>
 		<delete dir="dist"/>
@@ -16,7 +15,7 @@
     <target name="dist" depends="build">
         <jar destfile="dist/jar-enumerator.jar">
             <manifest>
-                <attribute name="Main-Class" value="com.kyrus.jarenumerator.JarEnumerator"/>
+                <attribute name="Main-Class" value="com.kyrustech.jarenumerator.JarEnumerator"/>
                 <attribute name="Class-Path" value="."/>
             </manifest>
             <fileset dir="bin"/>

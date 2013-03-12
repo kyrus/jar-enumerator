@@ -1,4 +1,4 @@
-package com.kyrus.jarenumerator;
+package com.kyrustech.jarenumerator;
 
 import java.io.File;
 import java.io.IOException;
