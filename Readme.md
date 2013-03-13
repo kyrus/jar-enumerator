@@ -1,6 +1,5 @@
 # JAR Enumerator
-Extracts the methods of classes in a JAR file. Filtering by a variety
-of class types and modifiers is supported.
+Command line utility that extracts the methods of classes in a JAR file. Filtering by a variety of class types and modifiers is supported. Useful if you ever need to know what is in a JAR - especially when you want to explore a public API and don't have the Javadocs.	
 
 # Building
 
